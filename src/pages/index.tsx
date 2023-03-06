@@ -6,6 +6,7 @@ import { Blog, getList } from "@/lib/microcms";
 import { serialize } from "next-mdx-remote/serialize";
 import { GetServerSideProps } from "next";
 import { MDXRemote } from "next-mdx-remote";
+import Test from "./test";
 
 export default function Home({ source }) {
   const [blogs, setBlogs] = useState<Blog[]>([]);
@@ -22,6 +23,11 @@ export default function Home({ source }) {
     );
   };
 
+  // const defaultComponents = { Test };
+  const component = {
+    p: Test,
+  };
+
   return (
     <>
       <Head>
@@ -35,7 +41,7 @@ export default function Home({ source }) {
         <button onClick={fetchBlogs}>フェッチボタン</button>
         <button onClick={fetchBlogs}>シリアライズボタン</button>
         {blogs && blogs.map((blog) => <li key={blog.id}>{blog.title}</li>)}
-        <MDXRemote {...source} />
+        <MDXRemote {...source} components={component} />
       </main>
     </>
   );
@@ -43,7 +49,12 @@ export default function Home({ source }) {
 
 export const getServerSideProps: GetServerSideProps = async () => {
   const { contents } = await getList();
+  console.log("1", contents[0].content);
+  console.log("2", contents[0].content.replace(/<br>/g, "<br />"));
   // MDX text - can be from a local file, database, anywhere
-  const mdxSource = await serialize(contents[1].content.replaceAll("<br>", ""));
+  const mdxSource = await serialize(
+    contents[1].content.replace(/<br>/g, "<br />")
+  );
+
   return { props: { source: mdxSource } };
 };

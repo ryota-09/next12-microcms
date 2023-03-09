@@ -19,6 +19,9 @@
     "next-mdx-remote": "^4.4.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "typescript": "4.9.5"
+    "rehype-parse": "^8.0.4",
+    "rehype-react": "^7.1.2",
+    "typescript": "4.9.5",
+    "unified": "^10.1.2"
   }
 }

@@ -16,7 +16,7 @@ export default function Satei({ isPreviewMode, content }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <h1>Next12</h1>
+      <h1>sateiディレクトリ(SSG)</h1>
         <div>{JSON.stringify(`isPreviewMode: ${isPreviewMode}`)}</div>
         <div>{isPreviewMode ? "プレビューモード": "Nonプレビュー"}</div>
         <div>{JSON.stringify(content)}</div>

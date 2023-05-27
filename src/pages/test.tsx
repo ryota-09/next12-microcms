@@ -16,6 +16,7 @@ const filterWhitespace = (node) =>
   !(typeof node === "string" && node.trim() === "");
 
 const H2Custom = ({ children, ...props }) => {
+  
   return <h2 style={{ color: "red" }}>{children}:差し替えたH2</h2>;
 };
 

@@ -5,12 +5,14 @@ import { GetServerSideProps, NextPage } from "next";
 import { BaseMicroCMSApiSingleDataType, SateiPageDataType } from "@/types";
 
 import parser, { domToReact } from "html-react-parser";
+import { RichEditorFactory } from "@/components/RichEditorUiParts/RichEditorFactory";
 
 type PropsType = {
   data: BaseMicroCMSApiSingleDataType<SateiPageDataType>;
+  directory: string;
 };
 
-const Home: NextPage<PropsType> = ({ data }) => {
+const Home: NextPage<PropsType> = ({ data, directory }) => {
   return (
     <>
       <Head>
@@ -19,9 +21,10 @@ const Home: NextPage<PropsType> = ({ data }) => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="">
-        <h1 className="bg-red-300">{data.title}</h1>
-        <h2>更新日: {data.updatedAt}</h2>
+      <main className="max-w-[1024px] mx-auto mt-[100px]">
+        <h1>タイトル: {data.title}</h1>
+        <h2 className="text-[40px]">更新日: {data.updatedAt}</h2>
+        <hr />
         {data.repeatTable &&
           data.repeatTable.map((content, index) => (
             <div key={index}>
@@ -29,6 +32,10 @@ const Home: NextPage<PropsType> = ({ data }) => {
               <div>{parser(content.table)}</div>
             </div>
           ))}
+        <hr />
+        {data.newedhitor && (
+          <RichEditorFactory directory={directory} html={data.newedhitor} />
+        )}
       </main>
     </>
   );
@@ -37,5 +44,5 @@ export default Home;
 
 export const getServerSideProps: GetServerSideProps = async () => {
   const data = await getTableById("ik9hciusz");
-  return { props: { data } };
+  return { props: { data, directory: "satei" } };
 };

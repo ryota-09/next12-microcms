@@ -30,7 +30,7 @@ export type BaseMicroCMSApiListDataType<T> = {
 type TextAreaWithImageType = {
   fieldId: string;
   title: MicroCMSFields["text"];
-  imgae: MicroCMSFields["image"];
+  image: MicroCMSFields["image"];
 };
 
 type RichEditorWithTitleType = {

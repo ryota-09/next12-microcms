@@ -1,24 +1,13 @@
+import {
+  BaseMicroCMSApiListDataType,
+  BaseMicroCMSApiSingleDataType,
+  EndPointLiteralType,
+  GetListHandler,
+  GetSingleHandler,
+  SateiPageDataType,
+} from "@/types";
 import { createClient } from "microcms-js-sdk";
-import type {
-  MicroCMSQueries,
-  MicroCMSImage,
-  MicroCMSDate,
-} from "microcms-js-sdk";
-
-//ブログの型定義
-export type Blog = {
-  id: string;
-  title: string;
-  content: string;
-  eyecatch?: MicroCMSImage;
-} & MicroCMSDate;
-
-export type BlogResponse = {
-  totalCount: number;
-  offset: number;
-  limit: number;
-  contents: Blog[];
-};
+import type { MicroCMSQueries } from "microcms-js-sdk";
 
 if (!process.env.NEXT_PUBLIC_MICROCMS_SERVICE_DOMAIN) {
   throw new Error("MICROCMS_SERVICE_DOMAIN is required");
@@ -34,11 +23,28 @@ export const client = createClient({
   apiKey: process.env.NEXT_PUBLIC_MICROCMS_API_KEY,
 });
 
-// ブログ一覧を取得
-export const getList = async (queries?: MicroCMSQueries) => {
-  const listData = await client.get<BlogResponse>({
-   endpoint: "blogs",
-   queries,
-  });
-  return listData;
- };
+const baseMicroCMSApiGetListHandler: GetListHandler = <T>(
+  endpoint: EndPointLiteralType,
+  queries?: MicroCMSQueries
+): Promise<BaseMicroCMSApiListDataType<T>> => {
+  return client.get<BaseMicroCMSApiListDataType<T>>({ endpoint, queries });
+};
+
+const baseMicroCMSApiGetHandlerByContentId: GetSingleHandler = <T>(
+  endpoint: EndPointLiteralType,
+  contentId: string,
+  queries?: MicroCMSQueries
+): Promise<T> => {
+  return client.get<T>({ endpoint, contentId, queries });
+};
+
+export const getTableList = (querys?: MicroCMSQueries) =>
+  baseMicroCMSApiGetListHandler<BaseMicroCMSApiListDataType<SateiPageDataType>>(
+    "tables",
+    querys
+  );
+
+export const getTableById = (contentId: string, querys?: MicroCMSQueries) =>
+  baseMicroCMSApiGetHandlerByContentId<
+    BaseMicroCMSApiSingleDataType<SateiPageDataType>
+  >("tables", contentId, querys);

@@ -1,28 +1,14 @@
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
 import { useEffect, useState } from "react";
-import { Blog, getList } from "@/lib/microcms";
+import { Blog, getList, getTableList } from "@/lib/microcms";
 
 import { serialize } from "next-mdx-remote/serialize";
 import { GetServerSideProps } from "next";
 import { MDXRemote } from "next-mdx-remote";
 import Test from "./test";
 
-export default function Home({ source }) {
-  const [blogs, setBlogs] = useState<Blog[]>([]);
-
-  async function fetchBlogs() {
-    const { contents } = await getList();
-    setBlogs(contents);
-  }
-
-  const getContent = async () => {
-    const mdxSource = await serialize(
-      blogs[0].content
-      // `<h2>ブログテンプレートから作成されました</h2>`
-    );
-  };
-
+export default function Home({ data }) {
   // const defaultComponents = { Test };
   const component = {
     p: Test,
@@ -38,23 +24,17 @@ export default function Home({ source }) {
       </Head>
       <main className={styles.main}>
         <h1>Next12</h1>
-        <button onClick={fetchBlogs}>フェッチボタン</button>
-        <button onClick={fetchBlogs}>シリアライズボタン</button>
-        {blogs && blogs.map((blog) => <li key={blog.id}>{blog.title}</li>)}
-        <MDXRemote {...source} components={component} />
+        {data &&
+          data.map((item, index) => (
+            <div key={index}>{JSON.stringify(item)}<p>@@@@@@@@@@@@@@@@@@</p></div>
+          ))}
       </main>
     </>
   );
 }
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const { contents } = await getList();
-  console.log("1", contents[0].content);
-  console.log("2", contents[0].content.replace(/<br>/g, "<br />"));
-  // MDX text - can be from a local file, database, anywhere
-  const mdxSource = await serialize(
-    contents[1].content.replace(/<br>/g, "<br />")
-  );
+  const { contents } = await getTableList();
 
-  return { props: { source: mdxSource } };
+  return { props: { data: contents } };
 };

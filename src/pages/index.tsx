@@ -1,19 +1,16 @@
 import Head from "next/head";
-import styles from "@/styles/Home.module.css";
-import { useEffect, useState } from "react";
-import { Blog, getList, getTableList } from "@/lib/microcms";
+import { getTableById, getTableList } from "@/lib/microcms";
 
-import { serialize } from "next-mdx-remote/serialize";
-import { GetServerSideProps } from "next";
-import { MDXRemote } from "next-mdx-remote";
-import Test from "./test";
+import { GetServerSideProps, NextPage } from "next";
+import { BaseMicroCMSApiSingleDataType, SateiPageDataType } from "@/types";
 
-export default function Home({ data }) {
-  // const defaultComponents = { Test };
-  const component = {
-    p: Test,
-  };
+import parser, { domToReact } from "html-react-parser";
 
+type PropsType = {
+  data: BaseMicroCMSApiSingleDataType<SateiPageDataType>;
+};
+
+const Home: NextPage<PropsType> = ({ data }) => {
   return (
     <>
       <Head>
@@ -22,19 +19,23 @@ export default function Home({ data }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={styles.main}>
-        <h1>Next12</h1>
-        {data &&
-          data.map((item, index) => (
-            <div key={index}>{JSON.stringify(item)}<p>@@@@@@@@@@@@@@@@@@</p></div>
+      <main className="">
+        <h1 className="bg-red-300">{data.title}</h1>
+        <h2>更新日: {data.updatedAt}</h2>
+        {data.repeatTable &&
+          data.repeatTable.map((content, index) => (
+            <div key={index}>
+              <b>repeatTableエリア</b>
+              <div>{parser(content.table)}</div>
+            </div>
           ))}
       </main>
     </>
   );
-}
+};
+export default Home;
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const { contents } = await getTableList();
-
-  return { props: { data: contents } };
+  const data = await getTableById("ik9hciusz");
+  return { props: { data } };
 };

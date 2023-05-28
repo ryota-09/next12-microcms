@@ -60,3 +60,8 @@ export type GetSingleHandler = <T>(
   contentId: string,
   queries?: MicroCMSQueries
 ) => Promise<T>;
+
+export type _PreviewData = {
+  draftKey: string
+  directory: string
+}

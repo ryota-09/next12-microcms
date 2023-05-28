@@ -1,10 +1,9 @@
 import { GetServerSideProps, GetStaticPaths } from "next";
 import Head from "next/head";
 
-export default function Shaken({ isPreviewMode, content }) {
-
+export default function Shaken({ isPreviewMode, content }: any) {
   if (!content) {
-    return <p>エラーページ</p>
+    return <p>エラーページ</p>;
   }
 
   return (
@@ -18,7 +17,7 @@ export default function Shaken({ isPreviewMode, content }) {
       <main>
         <h1>shakenディレクトリ(SSR)</h1>
         <div>{JSON.stringify(`isPreviewMode: ${isPreviewMode}`)}</div>
-        <div>{isPreviewMode ? "プレビューモード": "Nonプレビュー"}</div>
+        <div>{isPreviewMode ? "プレビューモード" : "Nonプレビュー"}</div>
         <div>{JSON.stringify(content)}</div>
       </main>
     </>
@@ -26,16 +25,21 @@ export default function Shaken({ isPreviewMode, content }) {
 }
 // http://localhost:3000/api/preview?slug=/preview/satei/hoge&draftKey=MufKKRnw-f
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const slug = context.params?.slug
-  const draftKey = context.previewData?.draftKey
-  const isPreviewMode = context.preview
+  const slug = context.params?.slug;
+  const previewData: any = context.previewData;
+  const draftKey = previewData.draftKey;
+  const isPreviewMode = context.preview;
   const content = await fetch(
     `https://${
       process.env.NEXT_PUBLIC_MICROCMS_SERVICE_DOMAIN
     }.microcms.io/api/v1/tables/${slug}/${
       draftKey !== undefined ? `?draftKey=${draftKey}` : ""
     }`,
-    { headers: { "X-MICROCMS-API-KEY": process.env.NEXT_PUBLIC_MICROCMS_API_KEY || "" } }
+    {
+      headers: {
+        "X-MICROCMS-API-KEY": process.env.NEXT_PUBLIC_MICROCMS_API_KEY || "",
+      },
+    }
   ).then((res) => res.json());
 
   return {
@@ -45,4 +49,3 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   };
 };
-

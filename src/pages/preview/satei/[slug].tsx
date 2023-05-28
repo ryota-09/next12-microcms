@@ -1,7 +1,9 @@
+import { BaseMicroCMSApiSingleDataType, SateiPageDataType } from "@/types";
 import { GetStaticPaths, GetStaticProps, NextPageContext } from "next";
 import Head from "next/head";
+import { FC } from "react";
 
-export default function Satei({ isPreviewMode, content }) {
+export default function Satei({ isPreviewMode, content }: any) {
 
   if (!content) {
     return <p>エラーページ</p>
@@ -27,7 +29,8 @@ export default function Satei({ isPreviewMode, content }) {
 // http://localhost:3000/api/preview?slug=/preview/satei/hoge&draftKey=MufKKRnw-f
 export const getStaticProps: GetStaticProps = async (context) => {
   const slug = context.params?.slug
-  const draftKey = context.previewData?.draftKey
+  const previewData: any = context.previewData;
+  const draftKey = previewData.draftKey
   const isPreviewMode = context.preview
   const content = await fetch(
     `https://${

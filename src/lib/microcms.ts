@@ -26,8 +26,8 @@ export const client = createClient({
 const baseMicroCMSApiGetListHandler: GetListHandler = <T>(
   endpoint: EndPointLiteralType,
   queries?: MicroCMSQueries
-): Promise<BaseMicroCMSApiListDataType<T>> => {
-  return client.get<BaseMicroCMSApiListDataType<T>>({ endpoint, queries });
+): Promise<T> => {
+  return client.get<T>({ endpoint, queries });
 };
 
 const baseMicroCMSApiGetHandlerByContentId: GetSingleHandler = <T>(

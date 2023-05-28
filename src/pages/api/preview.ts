@@ -32,7 +32,7 @@ export default async function handler(
   const content = await fetch(
     `https://${
       process.env.NEXT_PUBLIC_MICROCMS_SERVICE_DOMAIN
-    }.microcms.io/api/v1/tables/${req.query.slug.split("/")[1]}?draftKey=${
+    }.microcms.io/api/v1/tables/${`${req.query.slug}`.split("/")[1]}?draftKey=${
       req.query.draftKey
     }`,
     {
@@ -54,7 +54,7 @@ export default async function handler(
     { maxAge: 60 }
   );
   res.writeHead(307, {
-    Location: `/preview/${req.query.slug.split("/")[0]}/${content.id}`,
+    Location: `/preview/${`${req.query.slug}`.split("/")[0]}/${content.id}`,
   });
   res.end("Preview mode enabled");
 }

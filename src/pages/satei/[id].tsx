@@ -1,23 +1,25 @@
 /* eslint-disable jsx-a11y/alt-text */
-import { RichEditorFactory } from "@/components/RichEditorUiParts/RichEditorFactory";
-import {
-  BaseMicroCMSApiSingleDataType,
-  SateiPageDataType,
-  _PreviewData,
-} from "@/types";
-import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import Head from "next/head";
+import { getTableById, getTableList } from "@/lib/microcms";
+
+import {
+  GetServerSideProps,
+  GetStaticPaths,
+  GetStaticProps,
+  NextPage,
+} from "next";
+import { BaseMicroCMSApiSingleDataType, SateiPageDataType } from "@/types";
+
+import parser, { domToReact } from "html-react-parser";
+import { RichEditorFactory } from "@/components/RichEditorUiParts/RichEditorFactory";
 import Image from "next/image";
-import parser from "html-react-parser";
 
 type PropsType = {
-  isPreviewMode: boolean;
-  content: BaseMicroCMSApiSingleDataType<SateiPageDataType>;
+  data: BaseMicroCMSApiSingleDataType<SateiPageDataType>;
   directory: string;
 };
 
-const Home: NextPage<PropsType> = ({ isPreviewMode, content, directory }) => {
-  if (!content) return <p>エラーページ</p>;
+const Home: NextPage<PropsType> = ({ data, directory }) => {
   return (
     <>
       <Head>
@@ -27,25 +29,23 @@ const Home: NextPage<PropsType> = ({ isPreviewMode, content, directory }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="max-w-[1024px] mx-auto mt-[100px]">
-        <div className="text-[40px] text-red-500">isPreviewMode: {JSON.stringify(isPreviewMode)}</div>
-        <div className="text-[40px] text-blue-500">directory: {JSON.stringify(directory)}</div>
-        <h1>タイトル: {content.title}</h1>
-        <h2 className="text-[40px]">更新日: {content.updatedAt}</h2>
+        <h1>タイトル: {data.title}</h1>
+        <h2 className="text-[40px]">更新日: {data.updatedAt}</h2>
         <hr />
-        {content.repeatTable &&
-          content.repeatTable.map((content, index) => (
+        {data.repeatTable &&
+          data.repeatTable.map((content, index) => (
             <div key={index}>
               <b>repeatTableエリア</b>
               <div>{parser(content.table)}</div>
             </div>
           ))}
         <hr />
-        {content.newedhitor && (
-          <RichEditorFactory directory={directory} html={content.newedhitor} />
+        {data.newedhitor && (
+          <RichEditorFactory directory={directory} html={data.newedhitor} />
         )}
         <hr />
-        {content.repeatTable2 &&
-          content.repeatTable2.map((content, index) => (
+        {data.repeatTable2 &&
+          data.repeatTable2.map((content, index) => (
             <div key={index}>
               <b>repeatTable2のエリア</b>
               {"title" in content && (
@@ -79,34 +79,13 @@ const Home: NextPage<PropsType> = ({ isPreviewMode, content, directory }) => {
 export default Home;
 
 export const getStaticProps: GetStaticProps = async (context) => {
-  const isPreviewMode = context.preview;
-  if (!isPreviewMode) return { notFound: true };
-  const contentId = context.params?.id;
-  const previewData: any = context.previewData;
-  const draftKey = previewData.draftKey;
-  const directory = previewData.directory;
-  const content = await fetch(
-    `https://${
-      process.env.NEXT_PUBLIC_MICROCMS_SERVICE_DOMAIN
-    }.microcms.io/api/v1/tables/${contentId}/${
-      draftKey !== undefined ? `?draftKey=${draftKey}` : ""
-    }`,
-    {
-      headers: {
-        "X-MICROCMS-API-KEY": process.env.NEXT_PUBLIC_MICROCMS_API_KEY || "",
-      },
-    }
-  ).then((res) => res.json());
+  const contentId = !Array.isArray(context.params?.id)
+    ? context.params?.id
+    : "";
 
-  return {
-    props: {
-      isPreviewMode,
-      directory,
-      content,
-    },
-  };
+  const data = await getTableById(contentId ?? "ik9hciusz");
+  return { props: { data, directory: "satei" } };
 };
-
 export const getStaticPaths: GetStaticPaths = async (req) => {
   let paramList = [];
   const contents = await fetch(

@@ -89,16 +89,6 @@ export type SateiPageContentType = PageContentType<{
   >;
 }>;
 
-export type GetListHandler = <T>(
-  endPoint: EndPointLiteralType,
-  queries?: MicroCMSQueries
-) => Promise<T>;
-export type GetSingleHandler = <T>(
-  endPoint: EndPointLiteralType,
-  contentId: string,
-  queries?: MicroCMSQueries
-) => Promise<T>;
-
 export type GetObjectType = "LIST" | "SINGLE";
 
 export type BaseMicroCMSApiType = {

@@ -1,9 +1,7 @@
 import {
-  BaseMicroCMSApiListDataType,
-  BaseMicroCMSApiSingleDataType,
+  BaseMicroCMSApiType,
   EndPointLiteralType,
-  GetListHandler,
-  GetSingleHandler,
+  GetObjectType,
   SateiPageContentType,
 } from "@/types";
 import { createClient } from "microcms-js-sdk";
@@ -23,29 +21,33 @@ export const client = createClient({
   apiKey: process.env.NEXT_PUBLIC_MICROCMS_API_KEY,
 });
 
-const baseMicroCMSApiGetListHandler: GetListHandler = <T>(
-  endpoint: EndPointLiteralType,
-  queries?: MicroCMSQueries
-): Promise<T> => {
-  return client.get<T>({ endpoint, queries });
-};
+const baseMicroCMSApiGetHandler: BaseMicroCMSApiType =
+  (objectType: GetObjectType) =>
+  <T>(
+    endpoint: EndPointLiteralType,
+    queries?: MicroCMSQueries,
+    contentId?: string
+  ) => {
+    switch (objectType) {
+      case "LIST":
+        return client.get<T>({ endpoint, queries });
+      case "SINGLE":
+        return client.get<T>({ endpoint, contentId, queries });
+      default:
+        throw new Error(`🔥: objectTypeに誤りがあります。 ${objectType}`);
+    }
+  };
 
-const baseMicroCMSApiGetHandlerByContentId: GetSingleHandler = <T>(
-  endpoint: EndPointLiteralType,
-  contentId: string,
-  queries?: MicroCMSQueries
-): Promise<T> => {
-  return client.get<T>({ endpoint, contentId, queries });
-};
+const MicroCMSApiGetListHandler = baseMicroCMSApiGetHandler("LIST");
+
+const MicroCMSApiGetSingleObjectHandler = baseMicroCMSApiGetHandler("SINGLE");
 
 export const getTableList = (querys?: MicroCMSQueries) =>
-  baseMicroCMSApiGetListHandler<BaseMicroCMSApiListDataType<SateiPageContentType>>(
-    "tables",
-    querys
-  );
+  MicroCMSApiGetListHandler<SateiPageContentType>("tables", querys);
 
 export const getTableById = (contentId: string, querys?: MicroCMSQueries) =>
-  baseMicroCMSApiGetHandlerByContentId<
-    BaseMicroCMSApiSingleDataType<SateiPageContentType>
-  >("tables", contentId, querys);
-
+  MicroCMSApiGetSingleObjectHandler<SateiPageContentType>(
+    "tables",
+    querys,
+    contentId
+  );

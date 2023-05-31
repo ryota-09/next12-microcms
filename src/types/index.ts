@@ -3,6 +3,7 @@ import {
   MicroCMSImage,
   MicroCMSQueries,
   MicroCMSListContent,
+  MicroCMSContentId,
 } from "microcms-js-sdk";
 
 const ENDPOINT_LIST = ["tables", "blogs"] as const;
@@ -25,7 +26,7 @@ type MicroCMSFields = Readonly<{
   date: MicroCMSDate;
 }>;
 
-export type BaseMicroCMSApiSingleDataType<T> = {
+export type BaseMicroCMSApiSingleDataType<T extends MicroCMSContentId> = {
   id: string;
   createdAt: string;
   updatedAt: string;
@@ -97,6 +98,20 @@ export type GetSingleHandler = <T>(
   contentId: string,
   queries?: MicroCMSQueries
 ) => Promise<T>;
+
+export type GetObjectType = "LIST" | "SINGLE";
+
+export type BaseMicroCMSApiType = {
+  (getObjectType: "LIST"): <T extends MicroCMSListContent>(
+    endpoint: EndPointLiteralType,
+    queries?: MicroCMSQueries
+  ) => Promise<BaseMicroCMSApiListDataType<T>>;
+  (getObjectType: "SINGLE"): <T extends MicroCMSContentId>(
+    endpoint: EndPointLiteralType,
+    queries: MicroCMSQueries | undefined,
+    contentId: string
+  ) => Promise<BaseMicroCMSApiSingleDataType<T>>;
+};
 
 export type _PreviewData = {
   draftKey: string;

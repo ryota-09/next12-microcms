@@ -88,14 +88,15 @@ export const getStaticProps: GetStaticProps = async (context) => {
 };
 export const getStaticPaths: GetStaticPaths = async (req) => {
   let paramList = [];
-  const contents = await fetch(
-    `https://${process.env.NEXT_PUBLIC_MICROCMS_SERVICE_DOMAIN}.microcms.io/api/v1/tables`,
-    {
-      headers: {
-        "X-MICROCMS-API-KEY": process.env.NEXT_PUBLIC_MICROCMS_API_KEY || "",
-      },
-    }
-  ).then((res) => res.json());
+  // const contents = await fetch(
+  //   `https://${process.env.NEXT_PUBLIC_MICROCMS_SERVICE_DOMAIN}.microcms.io/api/v1/tables`,
+  //   {
+  //     headers: {
+  //       "X-MICROCMS-API-KEY": process.env.NEXT_PUBLIC_MICROCMS_API_KEY || "",
+  //     },
+  //   }
+  // ).then((res) => res.json());
+  const contents = await getTableList()
 
   for (const item of contents.contents) {
     paramList.push({

@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 import Head from "next/head";
-import { getTableById } from "@/lib/microcms";
+import { getTableById, getTableList } from "@/lib/microcms";
 
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { BaseMicroCMSApiSingleDataType, SateiPageContentType } from "@/types";
@@ -178,15 +178,16 @@ export const getStaticProps: GetStaticProps = async (context) => {
 };
 export const getStaticPaths: GetStaticPaths = async (req) => {
   let paramList = [];
-  const contents = await fetch(
-    `https://${process.env.NEXT_PUBLIC_MICROCMS_SERVICE_DOMAIN}.microcms.io/api/v1/tables`,
-    {
-      headers: {
-        "X-MICROCMS-API-KEY": process.env.NEXT_PUBLIC_MICROCMS_API_KEY || "",
-      },
-    }
-  ).then((res) => res.json());
-
+  // const contents = await fetch(
+  //   `https://${process.env.NEXT_PUBLIC_MICROCMS_SERVICE_DOMAIN}.microcms.io/api/v1/tables`,
+  //   {
+  //     headers: {
+  //       "X-MICROCMS-API-KEY": process.env.NEXT_PUBLIC_MICROCMS_API_KEY || "",
+  //     },
+  //   }
+  // ).then((res) => res.json());
+  const contents = await getTableList()
+  
   for (const item of contents.contents) {
     paramList.push({
       params: {

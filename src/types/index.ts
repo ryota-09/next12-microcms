@@ -1,8 +1,21 @@
-import { MicroCMSDate, MicroCMSImage, MicroCMSQueries } from "microcms-js-sdk";
+import {
+  MicroCMSDate,
+  MicroCMSImage,
+  MicroCMSQueries,
+  MicroCMSListContent,
+} from "microcms-js-sdk";
 
-const endPointList = ["tables", "blogs"] as const;
+const ENDPOINT_LIST = ["tables", "blogs"] as const;
 
-export type EndPointLiteralType = (typeof endPointList)[number];
+const CUSTOM_FIELD = {
+  table: "table",
+  leftColumn: "leftColumn",
+  richeditor: "richeditor",
+} as const;
+
+type CustomFieldLiteralType = keyof typeof CUSTOM_FIELD;
+
+export type EndPointLiteralType = (typeof ENDPOINT_LIST)[number];
 
 type MicroCMSFields = Readonly<{
   text: string;
@@ -18,7 +31,7 @@ export type BaseMicroCMSApiSingleDataType<T> = {
   updatedAt: string;
 } & T;
 
-export type BaseMicroCMSApiListDataType<T> = {
+export type BaseMicroCMSApiListDataType<T extends MicroCMSListContent> = {
   contents: T[];
   createdAt: string;
   updatedAt: string;
@@ -27,29 +40,53 @@ export type BaseMicroCMSApiListDataType<T> = {
   limit: number;
 };
 
-type TextAreaWithImageType = {
-  fieldId: string;
-  title: MicroCMSFields["text"];
-  image: MicroCMSFields["image"];
-};
+type MicroCMSCustomFieldType<T extends CustomFieldLiteralType, U> = {
+  fieldId: T;
+} & U;
 
-type RichEditorWithTitleType = {
-  fieldId: string;
-  richeditor: MicroCMSFields["richEditor"];
-};
+type TextAreaWithImageType = MicroCMSCustomFieldType<
+  typeof CUSTOM_FIELD.leftColumn,
+  {
+    title: MicroCMSFields["text"];
+    image: MicroCMSFields["image"];
+  }
+>;
 
-type TableType = {
-  fieldId: string;
-  table: string;
-};
+type RichEditorWithTitleType = MicroCMSCustomFieldType<
+  typeof CUSTOM_FIELD.richeditor,
+  {
+    richeditor: MicroCMSFields["richEditor"];
+  }
+>;
 
-export type SateiPageDataType = {
+type TableType = MicroCMSCustomFieldType<
+  typeof CUSTOM_FIELD.table,
+  {
+    table: string;
+  }
+>;
+
+export type RepeatedFieldListType<
+  T extends MicroCMSCustomFieldType<CustomFieldLiteralType, object>
+> = T[];
+
+type PageContentType<T> = {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt?: string;
+  revisedAt?: string;
+} & T;
+
+export type SateiPageContentType = PageContentType<{
   title: MicroCMSFields["text"];
   table: MicroCMSFields["text"];
-  repeatTable: TableType[];
+  repeatTable: RepeatedFieldListType<TableType>;
   newedhitor: MicroCMSFields["richEditor"];
-  repeatTable2: (TextAreaWithImageType | RichEditorWithTitleType)[];
-};
+  repeatTable2: RepeatedFieldListType<
+    TextAreaWithImageType | RichEditorWithTitleType
+  >;
+}>;
 
 export type GetListHandler = <T>(
   endPoint: EndPointLiteralType,
@@ -62,6 +99,6 @@ export type GetSingleHandler = <T>(
 ) => Promise<T>;
 
 export type _PreviewData = {
-  draftKey: string
-  directory: string
-}
+  draftKey: string;
+  directory: string;
+};

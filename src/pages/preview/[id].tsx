@@ -2,7 +2,7 @@
 import { RichEditorFactory } from "@/components/RichEditorUiParts/RichEditorFactory";
 import {
   BaseMicroCMSApiSingleDataType,
-  SateiPageDataType,
+  SateiPageContentType,
   _PreviewData,
 } from "@/types";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
@@ -12,7 +12,7 @@ import parser from "html-react-parser";
 
 type PropsType = {
   isPreviewMode: boolean;
-  content: BaseMicroCMSApiSingleDataType<SateiPageDataType>;
+  content: BaseMicroCMSApiSingleDataType<SateiPageContentType>;
   directory: string;
 };
 

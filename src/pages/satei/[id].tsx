@@ -8,14 +8,14 @@ import {
   GetStaticProps,
   NextPage,
 } from "next";
-import { BaseMicroCMSApiSingleDataType, SateiPageDataType } from "@/types";
+import { BaseMicroCMSApiSingleDataType, SateiPageContentType } from "@/types";
 
 import parser, { domToReact } from "html-react-parser";
 import { RichEditorFactory } from "@/components/RichEditorUiParts/RichEditorFactory";
 import Image from "next/image";
 
 type PropsType = {
-  data: BaseMicroCMSApiSingleDataType<SateiPageDataType>;
+  data: BaseMicroCMSApiSingleDataType<SateiPageContentType>;
   directory: string;
 };
 
@@ -48,7 +48,7 @@ const Home: NextPage<PropsType> = ({ data, directory }) => {
           data.repeatTable2.map((content, index) => (
             <div key={index}>
               <b>repeatTable2のエリア</b>
-              {"title" in content && (
+              { "title" in content && (
                 <div>
                   <div>画像とタイトルのエリア</div>
                   <div>{content.title}</div>

@@ -4,7 +4,7 @@ import {
   EndPointLiteralType,
   GetListHandler,
   GetSingleHandler,
-  SateiPageDataType,
+  SateiPageContentType,
 } from "@/types";
 import { createClient } from "microcms-js-sdk";
 import type { MicroCMSQueries } from "microcms-js-sdk";
@@ -39,12 +39,13 @@ const baseMicroCMSApiGetHandlerByContentId: GetSingleHandler = <T>(
 };
 
 export const getTableList = (querys?: MicroCMSQueries) =>
-  baseMicroCMSApiGetListHandler<BaseMicroCMSApiListDataType<SateiPageDataType>>(
+  baseMicroCMSApiGetListHandler<BaseMicroCMSApiListDataType<SateiPageContentType>>(
     "tables",
     querys
   );
 
 export const getTableById = (contentId: string, querys?: MicroCMSQueries) =>
   baseMicroCMSApiGetHandlerByContentId<
-    BaseMicroCMSApiSingleDataType<SateiPageDataType>
+    BaseMicroCMSApiSingleDataType<SateiPageContentType>
   >("tables", contentId, querys);
+

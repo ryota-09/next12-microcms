@@ -110,6 +110,6 @@ export type _PreviewData = {
 
 export type TableOfContentsType = {
   id: string;
-  labele: string;
+  label: string;
   domName: "h2" | "h3";
 };

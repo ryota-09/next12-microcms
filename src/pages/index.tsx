@@ -9,7 +9,7 @@ import {
   TableOfContentsType,
 } from "@/types";
 
-import parser, { domToReact } from "html-react-parser";
+import parser from "html-react-parser";
 import { RichEditorFactory } from "@/components/RichEditorUiParts/RichEditorFactory";
 import Image from "next/image";
 import { useState } from "react";
@@ -48,6 +48,18 @@ const Home: NextPage<PropsType> = ({ data, tableOfContents, directory }) => {
         </button>
         <hr />
         <div>
+          <div>目次:</div>
+          <div>
+            {tableOfContents.map((tableElement) => (
+              <a
+                className="block"
+                key={tableElement.id}
+                href={`#${tableElement.id}`}
+              >
+                {tableElement.label}
+              </a>
+            ))}
+          </div>
         </div>
         <hr />
         {data.repeatTable &&
@@ -99,7 +111,8 @@ export default Home;
 export const getServerSideProps: GetServerSideProps = async () => {
   const data = await getTableById("ik9hciusz");
 
-  const cotArray: { id: string; label: string; domName: string }[] = [];
+  // 目次の生成
+  const tocArray: TableOfContentsType[] = [];
   for (const obj of data.repeatTable2) {
     if (obj.fieldId === "richeditor") {
       parser(obj.richeditor, {
@@ -113,7 +126,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
             if (domNode.children.length !== 1) {
               console.log("1以外", domNode.children);
             }
-            cotArray.push({
+            tocArray.push({
               id: domNode.attribs.id,
               label: domNode.children[0].data,
               domName: "h3",
@@ -125,5 +138,5 @@ export const getServerSideProps: GetServerSideProps = async () => {
     }
   }
 
-  return { props: { data, directory: "satei" } };
+  return { props: { data, tableOfContents: tocArray, directory: "satei" } };
 };

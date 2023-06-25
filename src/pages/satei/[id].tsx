@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 import Head from "next/head";
-import { getTableById, getTableList } from "@/lib/microcms";
+import { fn, getTableById, getTableList } from "@/lib/microcms";
 
 import {
   GetServerSideProps,
@@ -8,7 +8,7 @@ import {
   GetStaticProps,
   NextPage,
 } from "next";
-import { BaseMicroCMSApiSingleDataType, SateiPageContentType } from "@/types";
+import { BaseMicroCMSApiListDataType, BaseMicroCMSApiSingleDataType, SateiPageContentType } from "@/types";
 
 import parser, { domToReact } from "html-react-parser";
 import { RichEditorFactory } from "@/components/RichEditorUiParts/RichEditorFactory";
@@ -96,7 +96,13 @@ export const getStaticPaths: GetStaticPaths = async (req) => {
   //     },
   //   }
   // ).then((res) => res.json());
-  const contents = await getTableList()
+
+  // const data = await fn<SateiPageContentType>("id", "createdAt")
+  const data = await fn<SateiPageContentType, "id" | "createdAt">("id");
+
+  data
+
+  const contents =   await getTableList()
 
   for (const item of contents.contents) {
     paramList.push({

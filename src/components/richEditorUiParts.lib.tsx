@@ -1,4 +1,4 @@
-import { DOMNode, Element, domToReact } from "html-react-parser";
+import { DOMNode, Element, attributesToProps, domToReact } from "html-react-parser";
 import SateiH2 from "./RichEditorUiParts/CustomH2/SateiH2";
 import ShakenH2 from "./RichEditorUiParts/CustomH2/ShakenH2";
 
@@ -22,6 +22,7 @@ export const replaceForShaken: (
   node: DOMNode
 ) => {
   if (isDOMElement(node) && node.name === "h2") {
+
     return <ShakenH2 {...node.attribs}>{domToReact(node.children)}</ShakenH2>;
   }
 };

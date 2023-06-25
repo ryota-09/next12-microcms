@@ -3,18 +3,26 @@ import Head from "next/head";
 import { getTableById, getTableList } from "@/lib/microcms";
 
 import { GetServerSideProps, NextPage } from "next";
-import { BaseMicroCMSApiSingleDataType, SateiPageContentType } from "@/types";
+import {
+  BaseMicroCMSApiSingleDataType,
+  SateiPageContentType,
+  TableOfContentsType,
+} from "@/types";
 
 import parser, { domToReact } from "html-react-parser";
 import { RichEditorFactory } from "@/components/RichEditorUiParts/RichEditorFactory";
 import Image from "next/image";
+import { useState } from "react";
+import { isDOMElement } from "@/utils/typeGurd";
 
 type PropsType = {
   data: BaseMicroCMSApiSingleDataType<SateiPageContentType>;
+  tableOfContents: TableOfContentsType[];
   directory: string;
 };
 
-const Home: NextPage<PropsType> = ({ data, directory }) => {
+const Home: NextPage<PropsType> = ({ data, tableOfContents, directory }) => {
+  const [isOpen, setIsOpen] = useState(false);
   return (
     <>
       <Head>
@@ -26,6 +34,21 @@ const Home: NextPage<PropsType> = ({ data, directory }) => {
       <main className="max-w-[1024px] mx-auto mt-[100px]">
         <h1>タイトル: {data.title}</h1>
         <h2 className="text-[40px]">更新日: {data.updatedAt}</h2>
+        <hr />
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex justify-between items-center py-2 px-4 w-full text-left relative"
+        >
+          タイトル
+          <div
+            className={`after:content-[""] after:w-0 after:h-0 after:border-l-[12px] after:border-r-[12px] after:border-t-[12px] after:border-transparent after:border-t-blue-500 after:inline-block after:transform-origin-center transform transition-transform duration-200 ${
+              isOpen ? "-rotate-180" : ""
+            }`}
+          ></div>
+        </button>
+        <hr />
+        <div>
+        </div>
         <hr />
         {data.repeatTable &&
           data.repeatTable.map((content, index) => (
@@ -75,5 +98,32 @@ export default Home;
 
 export const getServerSideProps: GetServerSideProps = async () => {
   const data = await getTableById("ik9hciusz");
+
+  const cotArray: { id: string; label: string; domName: string }[] = [];
+  for (const obj of data.repeatTable2) {
+    if (obj.fieldId === "richeditor") {
+      parser(obj.richeditor, {
+        replace: (domNode) => {
+          if (
+            isDOMElement(domNode) &&
+            domNode.name === "h3" &&
+            "data" in domNode.children[0]
+          ) {
+            // NOTE: childrenのサイズが2以上になるのはh3タグの中に複数のタグが入る場合らしい。
+            if (domNode.children.length !== 1) {
+              console.log("1以外", domNode.children);
+            }
+            cotArray.push({
+              id: domNode.attribs.id,
+              label: domNode.children[0].data,
+              domName: "h3",
+            });
+          }
+          return;
+        },
+      });
+    }
+  }
+
   return { props: { data, directory: "satei" } };
 };

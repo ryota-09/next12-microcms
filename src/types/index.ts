@@ -107,3 +107,9 @@ export type _PreviewData = {
   draftKey: string;
   directory: string;
 };
+
+export type TableOfContentsType = {
+  id: string;
+  labele: string;
+  domName: "h2" | "h3";
+};
